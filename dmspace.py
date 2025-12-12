@@ -15,17 +15,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-api_key= st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+# Try to get API key from environment, then from streamlit secrets
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    try:
+        api_key = st.secrets.get("OPENAI_API_KEY")
+    except Exception:
+        api_key = None
 
 if api_key is not None:
-    openai.api_key= api_key
-    client= OpenAI (api_key=openai.api_key)
+    openai.api_key = api_key
+    client = OpenAI(api_key=api_key)
+    DEMO_MODE = False
 else:
-    st.error (
-        "OpenAI API key not found. Please add it to a .env file"
-        "or set it as an environment variable."
-    )
-    st.stop()
+    client = None
+    DEMO_MODE = True
 
 #Constants/configuration
 
@@ -324,6 +328,9 @@ def is_possible_crisis(text:str) -> bool:
     return any(phrase in lowered for phrase in CRISIS_KEYWORDS)
 
 def generate_assistant_reply(conversation_messages):
+    if DEMO_MODE or not client:
+        return "💬 Chat is in demo mode. To enable AI responses, add your OpenAI API key to a .env file or Streamlit secrets."
+    
     try:
         cultural_context = st.session_state.get("cultural_context", "balanced")
         context_info = CULTURAL_CONTEXTS.get(cultural_context, CULTURAL_CONTEXTS["balanced"])
@@ -354,6 +361,9 @@ def generate_assistant_reply(conversation_messages):
     return None
 
 def generate_journal_prompts(emotion_log):
+    if DEMO_MODE or not client:
+        return "📝 Journal prompts require API key. Add OPENAI_API_KEY to .env file."
+    
     recent_entries = emotion_log[-5:]
     context_lines = []
     for entry in recent_entries:
@@ -735,16 +745,22 @@ st.markdown("""
     }
     
     input, textarea {
-        background: rgba(255, 255, 255, 0.12) !important;
-        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        background: rgba(20, 20, 40, 0.8) !important;
+        border: 2px solid rgba(102, 126, 234, 0.5) !important;
         border-radius: 10px !important;
         color: #ffffff !important;
         padding: 12px 16px !important;
+        font-size: 16px !important;
     }
     
     input:focus, textarea:focus {
-        background: rgba(255, 255, 255, 0.18) !important;
-        border-color: rgba(255, 255, 255, 0.4) !important;
+        background: rgba(20, 20, 40, 0.95) !important;
+        border-color: rgba(102, 126, 234, 0.9) !important;
+        color: #ffffff !important;
+    }
+    
+    input::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
     }
     
     [data-testid="stChatInputContainer"] input {
@@ -809,6 +825,70 @@ st.markdown("""
     
     .caption { color: rgba(255, 255, 255, 0.65) !important; font-size: 15px !important; }
     
+    /* Sidebar styling */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(135deg, rgba(20, 20, 50, 0.95) 0%, rgba(40, 40, 70, 0.95) 100%) !important;
+    }
+    
+    [data-testid="stSidebar"] h3, 
+    [data-testid="stSidebar"] h4 {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+    
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] span {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-size: 1rem !important;
+    }
+    
+    [data-testid="stSidebar"] .caption {
+        color: rgba(255, 255, 255, 0.7) !important;
+        font-size: 14px !important;
+    }
+    
+    [data-testid="stSidebar"] [role="radio"] {
+        color: #ffffff !important;
+    }
+    
+    [data-testid="stSidebar"] input {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(102, 126, 234, 0.5) !important;
+        color: #ffffff !important;
+    }
+    
+    [data-testid="stSidebar"] button {
+        background: rgba(102, 126, 234, 0.3) !important;
+        border: 1px solid rgba(102, 126, 234, 0.6) !important;
+        color: #ffffff !important;
+    }
+    
+    [data-testid="stSidebar"] button:hover {
+        background: rgba(102, 126, 234, 0.5) !important;
+        border-color: rgba(102, 126, 234, 0.8) !important;
+    }
+    
+    /* Sidebar arrow/toggle button - make it visible */
+    button[kind="tertiary"] {
+        color: rgba(102, 126, 234, 0.9) !important;
+        background: rgba(102, 126, 234, 0.2) !important;
+        border: 1px solid rgba(102, 126, 234, 0.4) !important;
+    }
+    
+    button[kind="tertiary"]:hover {
+        background: rgba(102, 126, 234, 0.3) !important;
+        border-color: rgba(102, 126, 234, 0.6) !important;
+    }
+    
+    [data-testid="stSidebarNav"] {
+        background: transparent !important;
+    }
+    
+    [data-testid="stSidebarNav"] button {
+        color: #ffffff !important;
+    }
+    
     html { scroll-behavior: smooth; }
 </style>
 """, unsafe_allow_html=True)
@@ -833,6 +913,9 @@ with st.sidebar:
     show_test_controls()
 
 #Main layout with logo
+
+if DEMO_MODE:
+    st.info("🎮 **DEMO MODE**: Games work fully! Chat & Journal features need OpenAI API key. Use 🧪 Testing Controls to load sample peer profiles.")
 
 st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
 
