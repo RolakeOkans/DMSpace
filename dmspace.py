@@ -575,13 +575,29 @@ def show_test_controls():
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("Load Peers", use_container_width=True):
+            # Only enable button if user has chatted
+            my_id = st.session_state.my_user_id
+            has_chat = len(st.session_state.messages) >= 2
+            
+            if st.button("Load Peers", use_container_width=True, disabled=not has_chat):
                 create_test_profiles()
+                
+                # Opt in current user if they have a profile
+                if my_id in st.session_state.peers:
+                    st.session_state.peers[my_id]["opt_in"] = True
+                
+                # Enable all other peers
                 for user_id in st.session_state.peers:
-                    if user_id != st.session_state.my_user_id:
+                    if user_id != my_id:
                         st.session_state.peers[user_id]["opt_in"] = True
-                st.success("✅ Loaded!")
+                
+                peer_count = len([u for u in st.session_state.peers if u != my_id])
+                st.success(f"✅ Loaded {peer_count} peers! Go to Connect tab.")
                 st.rerun()
+            
+            if not has_chat:
+                st.caption("💬 Chat first to build your profile, then load peers!")
+
         
         with col2:
             if st.button("Clear All", use_container_width=True):
@@ -869,16 +885,17 @@ st.markdown("""
         border-color: rgba(102, 126, 234, 0.8) !important;
     }
     
-    /* Sidebar arrow/toggle button - make it visible */
+    /* Sidebar toggle button - make it dark and visible */
     button[kind="tertiary"] {
-        color: rgba(102, 126, 234, 0.9) !important;
-        background: rgba(102, 126, 234, 0.2) !important;
-        border: 1px solid rgba(102, 126, 234, 0.4) !important;
+        color: #000000 !important;
+        background: #333333 !important;
+        border: 1px solid #555555 !important;
     }
     
     button[kind="tertiary"]:hover {
-        background: rgba(102, 126, 234, 0.3) !important;
-        border-color: rgba(102, 126, 234, 0.6) !important;
+        background: #444444 !important;
+        border-color: #666666 !important;
+        color: #ffffff !important;
     }
     
     [data-testid="stSidebarNav"] {
@@ -890,6 +907,59 @@ st.markdown("""
     }
     
     html { scroll-behavior: smooth; }
+    
+    /* Style Streamlit top header bar - make it dark */
+    header[data-testid="stHeader"] {
+        background-color: #1a1a2e !important;
+    }
+    
+    /* Entire header section */
+    [data-testid="stApp"] header {
+        background-color: #1a1a2e !important;
+        background-image: none !important;
+    }
+    
+    /* Top toolbar with Deploy, Rerun buttons */
+    [data-testid="stToolbar"] {
+        background-color: #1a1a2e !important;
+    }
+    
+    /* Make text in header white/visible */
+    [data-testid="stHeader"] button,
+    [data-testid="stHeader"] span,
+    [data-testid="stHeader"] div {
+        color: #ffffff !important;
+    }
+    
+    /* Toolbar buttons text */
+    [data-testid="stToolbar"] button {
+        color: #ffffff !important;
+    }
+    
+    /* Force sidebar toggle button to be dark */
+    [data-testid="baseButton-secondary"] {
+        background-color: #1a1a1a !important;
+        color: #ffffff !important;
+        border: 2px solid #333333 !important;
+    }
+    
+    [data-testid="baseButton-secondary"]:hover {
+        background-color: #333333 !important;
+        color: #ffffff !important;
+    }
+    
+    /* Alternative targeting for hamburger menu */
+    button[data-testid*="stSidebar"] {
+        background: #1a1a1a !important;
+        color: #ffffff !important;
+    }
+    
+    /* Target any button in top area */
+    [data-testid="stApp"] > header button {
+        background-color: #1a1a1a !important;
+        color: #ffffff !important;
+        border: 1px solid #333333 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
