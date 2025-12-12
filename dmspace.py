@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-api_key= os.getenv("OPENAI_API_KEY")
+api_key= st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
 
 if api_key is not None:
     openai.api_key= api_key
