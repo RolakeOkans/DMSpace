@@ -104,7 +104,6 @@ def show_word_game():
     init_game_state()
     
     if st.session_state.word_game_current >= 5:
-        # Game complete
         st.markdown(f"## 🎉 Game Complete!")
         st.markdown(f"""
         <div style="background: rgba(102, 126, 234, 0.2); border-radius: 12px; padding: 2rem; border: 1px solid rgba(102, 126, 234, 0.5); text-align: center;">
@@ -162,18 +161,16 @@ def show_gratitude_jar():
     
     init_game_state()
     
-    # Check streak
     today = datetime.now().date()
     if st.session_state.gratitude_last_date:
         last_date = datetime.fromisoformat(st.session_state.gratitude_last_date).date()
         if last_date == today:
             st.info(f"✨ You already added gratitude today! Streak: {st.session_state.gratitude_streak} days")
         elif (today - last_date).days == 1:
-            pass  # Can add today
+            pass
         else:
             st.session_state.gratitude_streak = 0
     
-    # Add new gratitude
     st.markdown("**What are you grateful for today?**")
     col1, col2 = st.columns([3, 1])
     
@@ -187,7 +184,6 @@ def show_gratitude_jar():
                     "date": today.isoformat()
                 })
                 
-                # Update streak
                 if not st.session_state.gratitude_last_date or datetime.fromisoformat(st.session_state.gratitude_last_date).date() != today:
                     st.session_state.gratitude_streak += 1
                     st.session_state.gratitude_last_date = datetime.now().isoformat()
@@ -200,7 +196,6 @@ def show_gratitude_jar():
     
     st.markdown("---")
     
-    # Show jar stats
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Total Gratitudes", len(st.session_state.gratitude_jar))
@@ -214,7 +209,6 @@ def show_gratitude_jar():
     
     st.markdown("---")
     
-    # Show recent gratitudes
     if st.session_state.gratitude_jar:
         st.markdown("**Your Gratitudes:**")
         for i, item in enumerate(reversed(st.session_state.gratitude_jar[-10:])):
@@ -228,7 +222,6 @@ def show_breathing_exercise():
     
     init_game_state()
     
-    # Choose pattern
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -259,7 +252,6 @@ def run_breathing_exercise(name, inhale, hold, exhale, purpose):
     cycles = 3
     
     for cycle in range(cycles):
-        # INHALE
         for i in range(inhale):
             with placeholder.container():
                 st.markdown(f"""
@@ -272,7 +264,6 @@ def run_breathing_exercise(name, inhale, hold, exhale, purpose):
                 """, unsafe_allow_html=True)
             time.sleep(1)
         
-        # HOLD
         for i in range(hold):
             with placeholder.container():
                 st.markdown(f"""
@@ -285,7 +276,6 @@ def run_breathing_exercise(name, inhale, hold, exhale, purpose):
                 """, unsafe_allow_html=True)
             time.sleep(1)
         
-        # EXHALE
         for i in range(exhale):
             size = 200 - (i/exhale)*100
             with placeholder.container():
@@ -299,7 +289,6 @@ def run_breathing_exercise(name, inhale, hold, exhale, purpose):
                 """, unsafe_allow_html=True)
             time.sleep(1)
     
-    # Complete
     placeholder.empty()
     st.success(f"✅ Great job! You completed {cycles} cycles of {name} breathing.")
     
@@ -718,8 +707,8 @@ st.markdown("""
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
     
-    h2, h3 { color: rgba(255, 255, 255, 0.95) !important; font-weight: 700 !important; }
-    p, label, span { color: rgba(255, 255, 255, 0.9) !important; }
+    h2, h3 { color: rgba(255, 255, 255, 0.95) !important; font-weight: 700 !important; font-size: 1.3rem !important; }
+    p, label, span { color: rgba(255, 255, 255, 0.9) !important; font-size: 1.05rem !important; }
     
     [role="tablist"] {
         gap: 0;
@@ -730,13 +719,13 @@ st.markdown("""
     }
     
     [role="tab"] {
-        padding: 1.2rem 2rem !important;
-        font-size: 15px !important;
+        padding: 1.5rem 2.5rem !important;
+        font-size: 18px !important;
         color: rgba(255, 255, 255, 0.6) !important;
         border: none !important;
         border-bottom: 3px solid transparent !important;
         transition: all 0.3s ease;
-        font-weight: 600;
+        font-weight: 700;
     }
     
     [role="tab"][aria-selected="true"] {
@@ -778,7 +767,7 @@ st.markdown("""
         font-weight: 600 !important;
         transition: all 0.3s ease !important;
         border: none !important;
-        font-size: 14px !important;
+        font-size: 16px !important;
     }
     
     button[kind="secondary"] {
@@ -818,7 +807,7 @@ st.markdown("""
         background: rgba(255, 255, 255, 0.05);
     }
     
-    .caption { color: rgba(255, 255, 255, 0.65) !important; font-size: 13px !important; }
+    .caption { color: rgba(255, 255, 255, 0.65) !important; font-size: 15px !important; }
     
     html { scroll-behavior: smooth; }
 </style>
@@ -843,10 +832,44 @@ with st.sidebar:
     st.markdown("---")
     show_test_controls()
 
-#Main layout
+#Main layout with logo
 
-st.title("🟣 DMSpace")
-st.markdown("<p style='text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 2rem; margin-top: 0.5rem;'>Express yourself. Find clarity. Connect with others.</p>", unsafe_allow_html=True)
+st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns([1, 1.5, 1])
+with col2:
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <svg width="120" height="120" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+              <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:0.9" />
+            </linearGradient>
+            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#c7d2fe;stop-opacity:0.9" />
+              <stop offset="100%" style="stop-color:#a5b4fc;stop-opacity:0.9" />
+            </linearGradient>
+            <filter id="shadow">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.4"/>
+            </filter>
+          </defs>
+          <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
+          <circle cx="60" cy="100" r="28" fill="url(#grad1)" filter="url(#shadow)"/>
+          <circle cx="140" cy="100" r="28" fill="url(#grad2)" filter="url(#shadow)"/>
+          <circle cx="100" cy="60" r="28" fill="url(#grad1)" filter="url(#shadow)"/>
+          <line x1="60" y1="100" x2="100" y2="60" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
+          <line x1="100" y1="60" x2="140" y2="100" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
+          <line x1="140" y1="100" x2="60" y2="100" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
+          <circle cx="100" cy="100" r="14" fill="rgba(102, 126, 234, 0.8)" filter="url(#shadow)"/>
+          <circle cx="100" cy="100" r="11" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"/>
+        </svg>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("<h1 style='text-align: center; font-size: 14rem; color: #ffffff; margin: -1rem 0 0 0; padding: 0; font-weight: 800; letter-spacing: -4px;'>DMSpace</h1>", unsafe_allow_html=True)
+st.markdown("<div style='margin-bottom: 2rem;'></div>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: rgba(255,255,255,0.8); margin-bottom: 3rem; margin-top: 0;'>Express yourself. Find clarity. Connect with others.</p>", unsafe_allow_html=True)
 
 chat_tab, journal_tab, peer_tab, games_tab = st.tabs(["💭 Chat", "📔 Journal", "🤝 Connect", "🎮 Wellness Games"])
 
@@ -887,50 +910,6 @@ with chat_tab:
                             st.session_state.peers[st.session_state.my_user_id] = profile
                 
                 st.rerun()
-
-# --- PEER SUPPORT TAB ---
-
-with peer_tab:
-    show_peer_support_tab()
-
-# --- GAMES TAB ---
-
-with games_tab:
-    st.markdown("## 🎮 Wellness Games")
-    st.caption("Play games for mental wellness. Pick one to get started!")
-    st.divider()
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        if st.button("🔍 Word Detective", use_container_width=True, key="select_word_game"):
-            st.session_state.current_game = "word"
-            st.rerun()
-    
-    with col2:
-        if st.button("🏺 Gratitude Jar", use_container_width=True, key="select_gratitude_game"):
-            st.session_state.current_game = "gratitude"
-            st.rerun()
-    
-    with col3:
-        if st.button("🫁 Breathing Exercise", use_container_width=True, key="select_breathing_game"):
-            st.session_state.current_game = "breathing"
-            st.rerun()
-    
-    st.divider()
-    
-    # Initialize current game
-    if "current_game" not in st.session_state:
-        st.session_state.current_game = None
-    
-    if st.session_state.current_game == "word":
-        show_word_game()
-    elif st.session_state.current_game == "gratitude":
-        show_gratitude_jar()
-    elif st.session_state.current_game == "breathing":
-        show_breathing_exercise()
-    else:
-        st.info("👆 Select a game above to start!")
 
 # --- JOURNAL TAB ---
 
@@ -980,3 +959,46 @@ with journal_tab:
                     if entry.get("text"):
                         st.caption(entry["text"][:120] + "..." if len(entry["text"]) > 120 else entry["text"])
                 st.divider()
+
+# --- PEER SUPPORT TAB ---
+
+with peer_tab:
+    show_peer_support_tab()
+
+# --- GAMES TAB ---
+
+with games_tab:
+    st.markdown("## 🎮 Wellness Games")
+    st.caption("Play games for mental wellness. Pick one to get started!")
+    st.divider()
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("🔍 Word Detective", use_container_width=True, key="select_word_game"):
+            st.session_state.current_game = "word"
+            st.rerun()
+    
+    with col2:
+        if st.button("🏺 Gratitude Jar", use_container_width=True, key="select_gratitude_game"):
+            st.session_state.current_game = "gratitude"
+            st.rerun()
+    
+    with col3:
+        if st.button("🫁 Breathing Exercise", use_container_width=True, key="select_breathing_game"):
+            st.session_state.current_game = "breathing"
+            st.rerun()
+    
+    st.divider()
+    
+    if "current_game" not in st.session_state:
+        st.session_state.current_game = None
+    
+    if st.session_state.current_game == "word":
+        show_word_game()
+    elif st.session_state.current_game == "gratitude":
+        show_gratitude_jar()
+    elif st.session_state.current_game == "breathing":
+        show_breathing_exercise()
+    else:
+        st.info("👆 Select a game above to start!")
